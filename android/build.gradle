@@ -18,7 +18,7 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 28)
@@ -87,7 +87,7 @@ afterEvaluate { project ->
     task androidJavadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += files(android.bootClasspath)
-        classpath += files(project.getConfigurations().getByName('compile').asList())
+//         classpath += files(project.getConfigurations().getByName('implementation').asList())
         include '**/*.java'
     }
 
@@ -122,12 +122,12 @@ afterEvaluate { project ->
     }
 
     task installArchives(type: Upload) {
-        configuration = configurations.archives
-        repositories.mavenDeployer {
-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
-            repository url: "file://${projectDir}/../android/maven"
-
-            configureReactNativePom pom
-        }
-    }
-}
+         configuration = configurations.archives
+         publishing {
+             publications {
+                  maven(MavenPublication) {
+                        artifact androidSourcesJar
+                 }
+             }
+     }}
+ }
